@@ -62,4 +62,25 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
         return deck;
     }
+
+    public Deck getDeck(String deckName) {
+        Deck deck = null;
+
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE name = ?";
+            String[] selection = new String[]{deckName};
+
+            Cursor cursor = db.rawQuery(selectQuery, selection);
+
+            if (cursor.moveToFirst()) {
+                int id = Integer.parseInt(cursor.getString(0));
+                deck = new Deck(id, deckName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return deck;
+    }
 }
