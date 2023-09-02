@@ -3,8 +3,8 @@ package com.vascodes.spaced.Model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DeckDbHelper extends SQLiteOpenHelper {
@@ -18,7 +18,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableSql = "CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)";
+        String createTableSql = "CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)";
         sqLiteDatabase.execSQL(createTableSql);
     }
 
@@ -28,57 +28,40 @@ public class DeckDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public void insertDeck(String deckName) {
+    public void insertDeck(String deckName) throws SQLiteConstraintException {
+        SQLiteDatabase db = this.getWritableDatabase();
+
         try {
-            SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-
             values.put("name", deckName);
-
-            db.insert(TABLE_NAME, null, values);
+            db.insertOrThrow(TABLE_NAME, null, values);
+        } catch (SQLiteConstraintException sce) {
+            throw sce;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             db.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
-
-    public Deck getDeck(int id) {
-        Deck deck = null;
-
-        try {
-            SQLiteDatabase db = this.getReadableDatabase();
-            String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
-            String[] selection = new String[]{String.valueOf(id)};
-
-            Cursor cursor = db.rawQuery(selectQuery, selection);
-
-            if (cursor.moveToFirst()) {
-                String name = cursor.getString(1);
-                deck = new Deck(id, name);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return deck;
     }
 
     public Deck getDeck(String deckName) {
         Deck deck = null;
+        SQLiteDatabase db = this.getReadableDatabase();
 
         try {
-            SQLiteDatabase db = this.getReadableDatabase();
             String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE name = ?";
             String[] selection = new String[]{deckName};
 
             Cursor cursor = db.rawQuery(selectQuery, selection);
 
-            if (cursor.moveToFirst()) {
-                int id = Integer.parseInt(cursor.getString(0));
+            if (cursor != null && cursor.moveToFirst()) {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                 deck = new Deck(id, deckName);
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            db.close();
         }
 
         return deck;

@@ -4,18 +4,18 @@ import androidx.annotation.Nullable;
 
 public class Flashcard {
     private int id;
-    private String deckId;
+    private int deckId;
     private String question;
     private String answer;
 
-    Flashcard(int id, String deckId, String question, String answer) {
+    Flashcard(int id, int deckId, String question, String answer) {
         this.id = id;
         this.setDeckId(deckId);
         this.setQuestion(question);
         this.setAnswer(answer);
     }
 
-    Flashcard(String deckId, String question, String answer) {
+    Flashcard(int deckId, String question, String answer) {
         this.setDeckId(deckId);
         this.setQuestion(question);
         this.setAnswer(answer);
@@ -29,11 +29,11 @@ public class Flashcard {
         this.id = id;
     }
 
-    public String getDeckId() {
+    public int getDeckId() {
         return deckId;
     }
 
-    public void setDeckId(String deckId) {
+    public void setDeckId(int deckId) {
         this.deckId = deckId;
     }
 
