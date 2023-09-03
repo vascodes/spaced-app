@@ -33,6 +33,17 @@
             </intent-filter>
         </activity>
 
+        <!--        Choose Deck Activity-->
+        <activity
+            android:name=".View.ChooseDeckActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="activity.ChooseDeck" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!--        Add Flashcard Activity-->
         <activity
             android:name=".View.AddFlashcardActivity"

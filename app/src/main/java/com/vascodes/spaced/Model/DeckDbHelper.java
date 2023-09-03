@@ -12,7 +12,6 @@ import com.vascodes.spaced.Common.Constants;
 import java.util.ArrayList;
 
 public class DeckDbHelper extends SQLiteOpenHelper {
-    private static final String TABLE_NAME = "Deck";
     SQLiteDatabase db;
 
     public DeckDbHelper(Context context) {
@@ -21,13 +20,13 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableSql = "CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)";
+        String createTableSql = "CREATE TABLE " + Constants.DECK_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)";
         sqLiteDatabase.execSQL(createTableSql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Constants.DECK_TABLE);
         onCreate(sqLiteDatabase);
     }
 
@@ -37,7 +36,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
             values.put("name", deckName);
-            db.insertOrThrow(TABLE_NAME, null, values);
+            db.insertOrThrow(Constants.DECK_TABLE, null, values);
         } catch (SQLiteConstraintException sce) {
             throw sce;
         } catch (Exception e) {
@@ -52,7 +51,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
         db = this.getReadableDatabase();
 
         try {
-            String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE name = ?";
+            String selectQuery = "SELECT * FROM " + Constants.DECK_TABLE + " WHERE name = ?";
             String[] selection = new String[]{deckName};
 
             Cursor cursor = db.rawQuery(selectQuery, selection);
@@ -70,16 +69,16 @@ public class DeckDbHelper extends SQLiteOpenHelper {
         return deck;
     }
 
-    public ArrayList<Deck> getAllDecks(){
+    public ArrayList<Deck> getAllDecks() {
         ArrayList<Deck> decks = new ArrayList<>();
         db = this.getReadableDatabase();
 
-        try{
-            String selectQuery = "SELECT * FROM " + TABLE_NAME;
+        try {
+            String selectQuery = "SELECT * FROM " + Constants.DECK_TABLE;
             Cursor cursor = db.rawQuery(selectQuery, null);
 
-            if (cursor != null && cursor.moveToFirst()){
-                do{
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
                     int deckId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                     String deckName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
 
@@ -88,7 +87,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
                     decks.add(deck);
                 } while (cursor.moveToNext());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

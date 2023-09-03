@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.vascodes.spaced.Common.Utils;
 import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Presenter.DeckPresenter;
 import com.vascodes.spaced.Presenter.FlashcardPresenter;
@@ -52,20 +53,14 @@ public class AddFlashcardActivity extends AppCompatActivity implements Flashcard
 
         // Switch to Create Deck activity if there are no decks added.
         if (!decks.isEmpty()){
-            initSpinnerDeckName(decks);
+            // Populate Deck Name spinner with all decks.
+            Utils.fillSpinner(this, spinnerDeckName, decks);
         } else {
             System.out.println("Empty Decks. Switching to create deck activity.");
             Intent createDeckIntent = new Intent("activity.CreateDeck");
             startActivity(createDeckIntent);
             finish();
         }
-    }
-
-    // Populate spinner with all decks.
-    public void initSpinnerDeckName(ArrayList<Deck> decks) {
-        ArrayAdapter<Deck> deckArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, decks);
-        deckArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDeckName.setAdapter(deckArrayAdapter);
     }
 
     @Override
