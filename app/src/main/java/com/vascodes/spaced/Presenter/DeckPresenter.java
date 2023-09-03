@@ -5,15 +5,25 @@ import android.database.sqlite.SQLiteConstraintException;
 
 import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Model.DeckDbHelper;
-import com.vascodes.spaced.View.DeckViewInterface;
+import com.vascodes.spaced.View.DeckView;
+
+import java.util.ArrayList;
 
 public class DeckPresenter {
-    private final DeckViewInterface view;
-    private final DeckDbHelper dbHelper;
+    private DeckView view;
+    private DeckDbHelper dbHelper;
 
-    public DeckPresenter(DeckViewInterface view, Context context) {
+    public DeckPresenter(DeckView view, Context context) {
         this.view = view;
         dbHelper = new DeckDbHelper(context);
+    }
+
+    public DeckPresenter(Context context){
+        dbHelper = new DeckDbHelper(context);
+    }
+
+    public void setView(DeckView view){
+        this.view = view;
     }
 
     public void addDeck(String deckName) {
@@ -37,5 +47,15 @@ public class DeckPresenter {
 
     public Deck getDeck(String deckName) {
         return dbHelper.getDeck(deckName);
+    }
+
+    public ArrayList<Deck> getAllDecks(){
+        ArrayList<Deck> decks = dbHelper.getAllDecks();
+
+//        if (decks.size() < 1){
+//            return;
+//        }
+
+        return decks;
     }
 }

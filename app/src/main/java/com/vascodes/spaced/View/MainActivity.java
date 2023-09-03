@@ -7,16 +7,22 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.vascodes.spaced.Presenter.MainPresenter;
 import com.vascodes.spaced.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button buttonCreateDeck;
     private Button buttonAddFlashcard;
 
+    private MainPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        presenter = new MainPresenter(this);
+        presenter.init();
 
         buttonCreateDeck = findViewById(R.id.buttonCreateDeck);
         buttonAddFlashcard = findViewById(R.id.buttonAddFlashcard);

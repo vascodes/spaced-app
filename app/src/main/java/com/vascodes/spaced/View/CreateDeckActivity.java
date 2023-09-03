@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.vascodes.spaced.Presenter.DeckPresenter;
 import com.vascodes.spaced.R;
 
-public class CreateDeckActivity extends AppCompatActivity implements DeckViewInterface {
+public class CreateDeckActivity extends AppCompatActivity implements DeckView {
     private DeckPresenter presenter;
 
     private EditText editTextDeckName;
@@ -46,7 +46,7 @@ public class CreateDeckActivity extends AppCompatActivity implements DeckViewInt
 
     @Override
     public void onDeckAddSuccess(String deckName) {
-        String toastText = String.format("%s deck created.", deckName);
+        String toastText = String.format("Deck created.", deckName);
         Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
     }
 

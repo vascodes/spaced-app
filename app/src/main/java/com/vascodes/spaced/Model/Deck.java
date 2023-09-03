@@ -1,5 +1,7 @@
 package com.vascodes.spaced.Model;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 public class Deck {
@@ -43,5 +45,11 @@ public class Deck {
 
     public void setFlashcards(ArrayList<Flashcard> flashcards) {
         this.flashcards = flashcards;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name.toUpperCase();
     }
 }

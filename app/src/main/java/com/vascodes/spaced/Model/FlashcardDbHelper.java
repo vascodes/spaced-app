@@ -4,12 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.vascodes.spaced.Common.Constants;
 
 public class FlashcardDbHelper extends SQLiteOpenHelper {
     private final static String TABLE_NAME = "Flashcard";
+    SQLiteDatabase db;
 
     public FlashcardDbHelper(Context context) {
         super(context, Constants.DB_NAME, null, Constants.DB_VERSION);
@@ -17,17 +19,7 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableQuery = String.format(
-                "CREATE TABLE %s (\n" +
-                        "  id INTEGER PRIMARY KEY AUTOINCREMENT, \n" +
-                        "  deck_id INTEGER NOT NULL,\n" +
-                        "  question TEXT NOT NULL,\n" +
-                        "  answer Text NOT NULL,\n" +
-                        "  FOREIGN KEY (deck_id) \n" +
-                        "  \tREFERENCES Deck (id)\n" +
-                        "  \tON DELETE CASCADE\n" +
-                        ")", TABLE_NAME);
-
+        String createTableQuery = "CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT, deck_id INTEGER NOT NULL, question TEXT NOT NULL, answer Text NOT NULL, FOREIGN KEY (deck_id) REFERENCES Deck (id) ON DELETE CASCADE)";
         sqLiteDatabase.execSQL(createTableQuery);
     }
 
@@ -37,31 +29,31 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public long insertFlashcard(int deckId, String question, String answer) {
-        long flashcardId = -1;
+    public void insertFlashcard(int deckId, String question, String answer) throws SQLiteException {
+        db = this.getWritableDatabase();
 
         try {
-            SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
 
             values.put("deck_id", deckId);
             values.put("question", question);
             values.put("answer", answer);
 
-            flashcardId = db.insert(TABLE_NAME, null, values);
-            db.close();
+            db.insertOrThrow(TABLE_NAME, null, values);
+        } catch (SQLiteException se) {
+            throw se;
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            db.close();
         }
-
-        return flashcardId;
     }
 
     public Flashcard getFlashcard(int id) {
         Flashcard flashcard = null;
+        db = this.getReadableDatabase();
 
         try {
-            SQLiteDatabase db = this.getReadableDatabase();
             String selectQuery = String.format("SELECT * FROM %s WHERE id = ?", TABLE_NAME);
             Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(id)});
 
@@ -72,10 +64,10 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
 
                 flashcard = new Flashcard(id, deckId, question, answer);
             }
-
-            db.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            db.close();
         }
 
         return flashcard;

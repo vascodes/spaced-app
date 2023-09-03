@@ -7,13 +7,16 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.vascodes.spaced.Common.Constants;
+
+import java.util.ArrayList;
+
 public class DeckDbHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "spacedDb";
     private static final String TABLE_NAME = "Deck";
+    SQLiteDatabase db;
 
     public DeckDbHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, Constants.DB_NAME, null, Constants.DB_VERSION);
     }
 
     @Override
@@ -29,7 +32,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
     }
 
     public void insertDeck(String deckName) throws SQLiteConstraintException {
-        SQLiteDatabase db = this.getWritableDatabase();
+        db = this.getWritableDatabase();
 
         try {
             ContentValues values = new ContentValues();
@@ -46,7 +49,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
     public Deck getDeck(String deckName) {
         Deck deck = null;
-        SQLiteDatabase db = this.getReadableDatabase();
+        db = this.getReadableDatabase();
 
         try {
             String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE name = ?";
@@ -65,5 +68,30 @@ public class DeckDbHelper extends SQLiteOpenHelper {
         }
 
         return deck;
+    }
+
+    public ArrayList<Deck> getAllDecks(){
+        ArrayList<Deck> decks = new ArrayList<>();
+        db = this.getReadableDatabase();
+
+        try{
+            String selectQuery = "SELECT * FROM " + TABLE_NAME;
+            Cursor cursor = db.rawQuery(selectQuery, null);
+
+            if (cursor != null && cursor.moveToFirst()){
+                do{
+                    int deckId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                    String deckName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+
+                    Deck deck = new Deck(deckId, deckName);
+
+                    decks.add(deck);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return decks;
     }
 }
