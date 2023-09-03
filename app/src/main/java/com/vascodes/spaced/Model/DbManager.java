@@ -8,9 +8,13 @@ import com.vascodes.spaced.Common.Constants;
 
 public class DbManager extends SQLiteOpenHelper {
     SQLiteDatabase db;
+    DeckDbHelper deckDbHelper;
+    FlashcardDbHelper flashcardDbHelper;
 
     public DbManager(Context context) {
         super(context, Constants.DB_NAME, null, Constants.DB_VERSION);
+        deckDbHelper = new DeckDbHelper(context);
+        flashcardDbHelper = new FlashcardDbHelper(context);
     }
 
     public void open() {
@@ -23,15 +27,15 @@ public class DbManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("CREATE TABLE Deck (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)");
-        sqLiteDatabase.execSQL("CREATE TABLE Flashcard (id INTEGER PRIMARY KEY AUTOINCREMENT, deck_id INTEGER NOT NULL, question TEXT NOT NULL, answer Text NOT NULL, FOREIGN KEY (deck_id) REFERENCES Deck (id) ON DELETE CASCADE)");
+        deckDbHelper.onCreate(sqLiteDatabase);
+        flashcardDbHelper.onCreate(sqLiteDatabase);
         System.out.println("Created all tables.");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Deck");
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Flashcard");
-        onCreate(sqLiteDatabase);
+        deckDbHelper.onUpgrade(sqLiteDatabase, i, i1);
+        flashcardDbHelper.onUpgrade(sqLiteDatabase,i, i1);
+        System.out.println("Updated all tables.");
     }
 }

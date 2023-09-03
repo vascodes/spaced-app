@@ -20,7 +20,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableSql = "CREATE TABLE " + Constants.DECK_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)";
+        String createTableSql = "CREATE TABLE " + Constants.DECK_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, session_number INTEGER DEFAULT 0, session_end_date TEXT)";
         sqLiteDatabase.execSQL(createTableSql);
     }
 
@@ -49,12 +49,13 @@ public class DeckDbHelper extends SQLiteOpenHelper {
     public Deck getDeck(String deckName) {
         Deck deck = null;
         db = this.getReadableDatabase();
+        Cursor cursor = null;
 
         try {
             String selectQuery = "SELECT * FROM " + Constants.DECK_TABLE + " WHERE name = ?";
             String[] selection = new String[]{deckName};
 
-            Cursor cursor = db.rawQuery(selectQuery, selection);
+            cursor = db.rawQuery(selectQuery, selection);
 
             if (cursor != null && cursor.moveToFirst()) {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
@@ -63,6 +64,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if (cursor != null) cursor.close();
             db.close();
         }
 
@@ -72,10 +74,11 @@ public class DeckDbHelper extends SQLiteOpenHelper {
     public ArrayList<Deck> getAllDecks() {
         ArrayList<Deck> decks = new ArrayList<>();
         db = this.getReadableDatabase();
+        Cursor cursor = null;
 
         try {
             String selectQuery = "SELECT * FROM " + Constants.DECK_TABLE;
-            Cursor cursor = db.rawQuery(selectQuery, null);
+            cursor = db.rawQuery(selectQuery, null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 do {
@@ -88,6 +91,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
                 } while (cursor.moveToNext());
             }
         } catch (Exception e) {
+            if (cursor != null) cursor.close();
             e.printStackTrace();
         }
 

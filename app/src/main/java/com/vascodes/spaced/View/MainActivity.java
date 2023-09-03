@@ -11,6 +11,7 @@ import com.vascodes.spaced.Presenter.MainPresenter;
 import com.vascodes.spaced.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private Button buttonStart;
     private Button buttonCreateDeck;
     private Button buttonAddFlashcard;
 
@@ -24,9 +25,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         presenter = new MainPresenter(this);
         presenter.init();
 
+        buttonStart = findViewById(R.id.buttonStart);
         buttonCreateDeck = findViewById(R.id.buttonCreateDeck);
         buttonAddFlashcard = findViewById(R.id.buttonAddFlashcard);
 
+        buttonStart.setOnClickListener(this);
         buttonCreateDeck.setOnClickListener(this);
         buttonAddFlashcard.setOnClickListener(this);
     }
@@ -34,6 +37,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.buttonStart:
+                Intent chooseDeckIntent = new Intent("activity.ChooseDeck");
+                startActivity(chooseDeckIntent);
+                break;
+
             case R.id.buttonCreateDeck:
                 Intent createDeckIntent = new Intent("activity.CreateDeck");
                 startActivity(createDeckIntent);

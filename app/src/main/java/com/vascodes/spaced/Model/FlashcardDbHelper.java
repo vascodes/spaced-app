@@ -20,7 +20,7 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableQuery = "CREATE TABLE " + Constants.FLASHCARD_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, deck_id INTEGER NOT NULL, question TEXT NOT NULL, answer Text NOT NULL, FOREIGN KEY (deck_id) REFERENCES Deck (id) ON DELETE CASCADE)";
+        String createTableQuery = "CREATE TABLE " + Constants.FLASHCARD_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, deck_id INTEGER NOT NULL, question TEXT NOT NULL, answer Text NOT NULL,  box_number INTEGER DEFAULT 1, FOREIGN KEY (deck_id) REFERENCES Deck (id) ON DELETE CASCADE)";
         sqLiteDatabase.execSQL(createTableQuery);
     }
 
@@ -53,10 +53,11 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
     public Flashcard getFlashcard(int id) {
         Flashcard flashcard = null;
         db = this.getReadableDatabase();
+        Cursor cursor = null;
 
         try {
             String selectQuery = String.format("SELECT * FROM %s WHERE id = ?", Constants.FLASHCARD_TABLE);
-            Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(id)});
+            cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(id)});
 
             if (cursor != null && cursor.moveToFirst()) {
                 int deckId = cursor.getInt(cursor.getColumnIndexOrThrow("deck_id"));
@@ -68,9 +69,39 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            if (cursor != null) cursor.close();
             db.close();
         }
 
         return flashcard;
+    }
+
+    public ArrayList<Flashcard> getAllFlashcardsOfADeck(int deckId) {
+        ArrayList<Flashcard> flashcards = new ArrayList<>();
+        Cursor cursor = null;
+        db = this.getReadableDatabase();
+
+        try {
+            String selectQuery = "SELECT * FROM " + Constants.FLASHCARD_TABLE + " WHERE deck_id = ?";
+            cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(deckId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String question = cursor.getString(cursor.getColumnIndexOrThrow("question"));
+                    String answer = cursor.getString(cursor.getColumnIndexOrThrow("answer"));
+
+                    Flashcard flashcard = new Flashcard(deckId, question, answer);
+
+                    flashcards.add(flashcard);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
+        }
+
+        return flashcards;
     }
 }

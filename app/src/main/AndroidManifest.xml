@@ -55,6 +55,17 @@
             </intent-filter>
         </activity>
 
+        <!--        Quiz Activity-->
+        <activity
+            android:name=".View.QuizActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="activity.Quiz" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

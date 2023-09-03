@@ -3,14 +3,12 @@ package com.vascodes.spaced.View;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.vascodes.spaced.Common.Utils;
 import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Presenter.DeckPresenter;
 import com.vascodes.spaced.R;
@@ -18,10 +16,10 @@ import com.vascodes.spaced.R;
 import java.util.ArrayList;
 
 public class ChooseDeckActivity extends AppCompatActivity implements DeckView, View.OnClickListener {
-    private DeckPresenter presenter;
+    private DeckPresenter deckPresenter;
 
     private Spinner spinnerDeckName;
-    private Button buttonChooseDeck;
+    private Button buttonStart;
     private Button buttonCreateDeck;
     private Button buttonBack;
     private Deck selectedDeck;
@@ -31,36 +29,42 @@ public class ChooseDeckActivity extends AppCompatActivity implements DeckView, V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_deck);
 
-        presenter = new DeckPresenter(this, this);
+        deckPresenter = new DeckPresenter(this, this);
 
-        buttonChooseDeck = findViewById(R.id.buttonChooseDeck);
+        buttonStart = findViewById(R.id.buttonStart);
         buttonCreateDeck = findViewById(R.id.buttonCreateDeck);
         buttonBack = findViewById(R.id.buttonBack);
 
-        buttonChooseDeck.setOnClickListener(this);
-
+        buttonStart.setOnClickListener(this);
         buttonBack.setOnClickListener(this);
-    }
 
-    // Populate spinner with all decks.
-    public void initSpinnerDeckName(ArrayList<Deck> decks) {
-        ArrayAdapter<Deck> deckArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, decks);
-        deckArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDeckName.setAdapter(deckArrayAdapter);
+        // Fetch all decks.
+        ArrayList<Deck> decks = deckPresenter.getAllDecks();
+
+        // Switch to Create Deck activity if there are no decks added.
+        if (!decks.isEmpty()) {
+            // Populate Deck Name spinner with all decks.
+            Utils.fillSpinner(this, spinnerDeckName, decks);
+        } else {
+            System.out.println("Empty Decks. Switching to create deck activity.");
+            Intent createDeckIntent = new Intent("activity.CreateDeck");
+            startActivity(createDeckIntent);
+            finish();
+        }
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.buttonChooseDeck:
-                if (selectedDeck == null){
+            case R.id.buttonStart:
+                if (selectedDeck == null) {
                     System.out.println("No deck selected");
-                    return;
+                } else {
+                    Intent quizIntent = new Intent("activity.Quiz");
+                    quizIntent.putExtra("selectedDeckId", selectedDeck.getId());
+                    quizIntent.putExtra("selectedDeckName", selectedDeck.getName());
+                    startActivity(quizIntent);
                 }
-
-                int deckId = selectedDeck.getId();
-                System.out.println("Choose deck button clicked.");
-                // TODO: Implement logic for Quiz manager.
                 break;
 
             case R.id.buttonCreateDeck:
