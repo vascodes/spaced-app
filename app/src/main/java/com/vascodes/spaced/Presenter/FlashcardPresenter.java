@@ -3,21 +3,24 @@ package com.vascodes.spaced.Presenter;
 import android.content.Context;
 import android.database.sqlite.SQLiteException;
 
+import com.vascodes.spaced.Model.Flashcard;
 import com.vascodes.spaced.Model.FlashcardDbHelper;
 import com.vascodes.spaced.View.FlashcardView;
 import com.vascodes.spaced.Common.Utils;
 
+import java.util.ArrayList;
+
 public class FlashcardPresenter {
     private FlashcardView view;
-    private FlashcardDbHelper dbHelper;
+    private FlashcardDbHelper flashcardDbHelper;
 
     public FlashcardPresenter(FlashcardView view, Context context) {
         this.view = view;
-        dbHelper = new FlashcardDbHelper(context);
+        flashcardDbHelper = new FlashcardDbHelper(context);
     }
 
     public FlashcardPresenter(Context context) {
-        dbHelper = new FlashcardDbHelper(context);
+        flashcardDbHelper = new FlashcardDbHelper(context);
     }
 
     public void setView(FlashcardView view) {
@@ -36,11 +39,15 @@ public class FlashcardPresenter {
         }
 
         try {
-            dbHelper.insertFlashcard(deckId, question, answer);
+            flashcardDbHelper.insertFlashcard(deckId, question, answer);
             view.onFlashcardAddedSuccessfully();
         } catch (SQLiteException e) {
             System.out.println(e.getMessage());
             view.onFlashcardAddedFailed();
         }
+    }
+
+    public ArrayList<Flashcard> getAllFlashCards(int deckId){
+        return flashcardDbHelper.getAllFlashcardsOfADeck(deckId);
     }
 }

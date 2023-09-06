@@ -20,7 +20,7 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableQuery = "CREATE TABLE " + Constants.FLASHCARD_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, deck_id INTEGER NOT NULL, question TEXT NOT NULL, answer Text NOT NULL,  box_number INTEGER DEFAULT 1, FOREIGN KEY (deck_id) REFERENCES Deck (id) ON DELETE CASCADE)";
+        String createTableQuery = "CREATE TABLE " + Constants.FLASHCARD_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, deck_id INTEGER NOT NULL, question TEXT NOT NULL, answer Text NOT NULL, box_number INTEGER DEFAULT 1, FOREIGN KEY (deck_id) REFERENCES Deck (id) ON DELETE CASCADE)";
         sqLiteDatabase.execSQL(createTableQuery);
     }
 
@@ -63,8 +63,9 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
                 int deckId = cursor.getInt(cursor.getColumnIndexOrThrow("deck_id"));
                 String question = cursor.getString(cursor.getColumnIndexOrThrow("question"));
                 String answer = cursor.getString(cursor.getColumnIndexOrThrow("answer"));
+                int boxNumber = cursor.getInt(cursor.getColumnIndexOrThrow("box_number"));
 
-                flashcard = new Flashcard(id, deckId, question, answer);
+                flashcard = new Flashcard(id, deckId, question, answer, boxNumber);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,8 +90,9 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
                 do {
                     String question = cursor.getString(cursor.getColumnIndexOrThrow("question"));
                     String answer = cursor.getString(cursor.getColumnIndexOrThrow("answer"));
+                    int boxNumber = cursor.getInt(cursor.getColumnIndexOrThrow("box_number"));
 
-                    Flashcard flashcard = new Flashcard(deckId, question, answer);
+                    Flashcard flashcard = new Flashcard(deckId, question, answer, boxNumber);
 
                     flashcards.add(flashcard);
                 } while (cursor.moveToNext());

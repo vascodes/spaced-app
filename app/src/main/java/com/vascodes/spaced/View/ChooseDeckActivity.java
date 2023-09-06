@@ -3,6 +3,7 @@ package com.vascodes.spaced.View;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 
@@ -15,7 +16,7 @@ import com.vascodes.spaced.R;
 
 import java.util.ArrayList;
 
-public class ChooseDeckActivity extends AppCompatActivity implements DeckView, View.OnClickListener {
+public class ChooseDeckActivity extends AppCompatActivity implements DeckView, View.OnClickListener, AdapterView.OnItemSelectedListener {
     private DeckPresenter deckPresenter;
 
     private Spinner spinnerDeckName;
@@ -34,9 +35,11 @@ public class ChooseDeckActivity extends AppCompatActivity implements DeckView, V
         buttonStart = findViewById(R.id.buttonStart);
         buttonCreateDeck = findViewById(R.id.buttonCreateDeck);
         buttonBack = findViewById(R.id.buttonBack);
+        spinnerDeckName = findViewById(R.id.spinnerDeckName);
 
         buttonStart.setOnClickListener(this);
         buttonBack.setOnClickListener(this);
+        spinnerDeckName.setOnItemSelectedListener(this);
 
         // Fetch all decks.
         ArrayList<Deck> decks = deckPresenter.getAllDecks();
@@ -76,6 +79,16 @@ public class ChooseDeckActivity extends AppCompatActivity implements DeckView, V
                 finish();
                 break;
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        selectedDeck = (Deck) adapterView.getItemAtPosition(i);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 
     @Override

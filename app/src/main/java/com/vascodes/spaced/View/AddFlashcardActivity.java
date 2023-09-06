@@ -85,6 +85,16 @@ public class AddFlashcardActivity extends AppCompatActivity implements Flashcard
     }
 
     @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        selectedDeck = (Deck) adapterView.getItemAtPosition(i);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    @Override
     public void onFlashcardAddedSuccessfully() {
         Toast.makeText(this, "Flashcard added!", Toast.LENGTH_SHORT).show();
     }
@@ -106,16 +116,6 @@ public class AddFlashcardActivity extends AppCompatActivity implements Flashcard
 
     @Override
     public void onDeckAddFail(String failMessage) {
-
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        selectedDeck = (Deck) adapterView.getItemAtPosition(i);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
 }

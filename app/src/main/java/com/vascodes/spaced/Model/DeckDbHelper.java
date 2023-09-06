@@ -20,7 +20,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableSql = "CREATE TABLE " + Constants.DECK_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, session_number INTEGER DEFAULT 0, session_end_date TEXT)";
+        String createTableSql = "CREATE TABLE " + Constants.DECK_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, session_number INTEGER DEFAULT 1, session_end_date TEXT)";
         sqLiteDatabase.execSQL(createTableSql);
     }
 
@@ -59,7 +59,9 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
             if (cursor != null && cursor.moveToFirst()) {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                int sessionNumber = cursor.getInt(cursor.getColumnIndexOrThrow("session_number"));
                 deck = new Deck(id, deckName);
+                deck.setSessionNumber(sessionNumber);
             }
         } catch (Exception e) {
             e.printStackTrace();

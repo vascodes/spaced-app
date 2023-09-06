@@ -7,18 +7,21 @@ public class Flashcard {
     private int deckId;
     private String question;
     private String answer;
+    private int boxNumber;
 
-    Flashcard(int id, int deckId, String question, String answer) {
+    Flashcard(int id, int deckId, String question, String answer, int boxNumber) {
         this.id = id;
         this.setDeckId(deckId);
         this.setQuestion(question);
         this.setAnswer(answer);
+        this.boxNumber = boxNumber;
     }
 
-    Flashcard(int deckId, String question, String answer) {
+    Flashcard(int deckId, String question, String answer, int boxNumber) {
         this.setDeckId(deckId);
         this.setQuestion(question);
         this.setAnswer(answer);
+        this.boxNumber = boxNumber;
     }
 
     public int getId() {
@@ -51,5 +54,13 @@ public class Flashcard {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public int getBoxNumber() {
+        return boxNumber;
+    }
+
+    public void setBoxNumber(int boxNumber) {
+        this.boxNumber = boxNumber;
     }
 }
