@@ -26,17 +26,15 @@ public class DeckPresenter {
         this.view = view;
     }
 
-    public void addDeck(String deckName) {
-        deckName = deckName.trim();
-        deckName = deckName.toLowerCase();
-
+    public void addDeck(Deck deck) {
         // Invalid deck name.
-        if (deckName.equals("") || deckName.length() == 0)
+        if (deck.getName().equals("") || deck.getName().length() == 0)
             view.onDeckAddFail("Please enter a valid deck name.");
 
         try {
-            dbHelper.insertDeck(deckName);
-            view.onDeckAddSuccess(deckName);
+            deck.setName(deck.getName().trim());
+            dbHelper.insertDeck(deck);
+            view.onDeckAddSuccess(deck.getName());
         } catch (SQLiteConstraintException sce) {
             // Duplicate deck name.
             view.onDeckAddFail("Deck with the same name already exists.");
@@ -45,17 +43,16 @@ public class DeckPresenter {
         }
     }
 
+    public void updateDeck(Deck deck){
+        dbHelper.updateDeck(deck);
+    }
+
     public Deck getDeck(String deckName) {
         return dbHelper.getDeck(deckName);
     }
 
     public ArrayList<Deck> getAllDecks(){
         ArrayList<Deck> decks = dbHelper.getAllDecks();
-
-//        if (decks.size() < 1){
-//            return;
-//        }
-
         return decks;
     }
 }

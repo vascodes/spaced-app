@@ -8,4 +8,6 @@ public interface QuizView {
     void onAnswerEmpty();
 
     void onSessionComplete();
+
+    void onDeckEmpty();
 }

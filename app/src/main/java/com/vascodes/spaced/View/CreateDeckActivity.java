@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Presenter.DeckPresenter;
 import com.vascodes.spaced.R;
 
@@ -32,7 +33,7 @@ public class CreateDeckActivity extends AppCompatActivity implements DeckView {
             @Override
             public void onClick(View view) {
                 String deckName = editTextDeckName.getText().toString();
-                presenter.addDeck(deckName);
+                presenter.addDeck(new Deck(deckName, 1));
             }
         });
 

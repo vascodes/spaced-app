@@ -30,19 +30,18 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public void insertFlashcard(int deckId, String question, String answer) throws SQLiteException {
+    public void insertFlashcard(Flashcard flashcard) throws SQLiteException {
         db = this.getWritableDatabase();
 
         try {
             ContentValues values = new ContentValues();
 
-            values.put("deck_id", deckId);
-            values.put("question", question);
-            values.put("answer", answer);
+            values.put("deck_id", flashcard.getDeckId());
+            values.put("question", flashcard.getQuestion());
+            values.put("answer", flashcard.getAnswer());
+            values.put("box_number", flashcard.getBoxNumber());
 
             db.insertOrThrow(Constants.FLASHCARD_TABLE, null, values);
-        } catch (SQLiteException se) {
-            throw se;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -88,11 +87,12 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
 
             if (cursor != null && cursor.moveToFirst()) {
                 do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                     String question = cursor.getString(cursor.getColumnIndexOrThrow("question"));
                     String answer = cursor.getString(cursor.getColumnIndexOrThrow("answer"));
                     int boxNumber = cursor.getInt(cursor.getColumnIndexOrThrow("box_number"));
 
-                    Flashcard flashcard = new Flashcard(deckId, question, answer, boxNumber);
+                    Flashcard flashcard = new Flashcard(id, deckId, question, answer, boxNumber);
 
                     flashcards.add(flashcard);
                 } while (cursor.moveToNext());
@@ -105,5 +105,22 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
         }
 
         return flashcards;
+    }
+
+    public void updateFlashcard(Flashcard flashcard) throws SQLiteException {
+        db = this.getWritableDatabase();
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put("box_number", flashcard.getBoxNumber());
+
+            int numUpdatedRows = db.update(Constants.FLASHCARD_TABLE, values, "id = ?", new String[]{String.valueOf(flashcard.getId())});
+            if (numUpdatedRows == 0)
+                throw new SQLiteException("Could not update box number of flashcard.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
     }
 }

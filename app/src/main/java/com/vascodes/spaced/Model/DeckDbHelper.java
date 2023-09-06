@@ -3,8 +3,10 @@ package com.vascodes.spaced.Model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.vascodes.spaced.Common.Constants;
@@ -20,7 +22,7 @@ public class DeckDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableSql = "CREATE TABLE " + Constants.DECK_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, session_number INTEGER DEFAULT 1, session_end_date TEXT)";
+        String createTableSql = "CREATE TABLE " + Constants.DECK_TABLE + " (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, session_number INTEGER DEFAULT 1)";
         sqLiteDatabase.execSQL(createTableSql);
     }
 
@@ -30,15 +32,34 @@ public class DeckDbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public void insertDeck(String deckName) throws SQLiteConstraintException {
+    public void insertDeck(Deck deck) throws SQLiteConstraintException {
         db = this.getWritableDatabase();
 
         try {
             ContentValues values = new ContentValues();
-            values.put("name", deckName);
+            values.put("name", deck.getName());
+            values.put("session_number", deck.getSessionNumber());
             db.insertOrThrow(Constants.DECK_TABLE, null, values);
         } catch (SQLiteConstraintException sce) {
             throw sce;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+
+    public void updateDeck(Deck deck) throws SQLiteException {
+        db = this.getWritableDatabase();
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put("name", deck.getName());
+            values.put("session_number", deck.getSessionNumber());
+
+            int numUpdatedRows = db.update(Constants.DECK_TABLE, values, "id = ?", new String[]{String.valueOf(deck.getId())});
+            if (numUpdatedRows == 0)
+                throw new SQLiteException("Error updating Deck table.");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -60,8 +81,8 @@ public class DeckDbHelper extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst()) {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                 int sessionNumber = cursor.getInt(cursor.getColumnIndexOrThrow("session_number"));
-                deck = new Deck(id, deckName);
-                deck.setSessionNumber(sessionNumber);
+
+                deck = new Deck(id, deckName, sessionNumber);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,8 +107,9 @@ public class DeckDbHelper extends SQLiteOpenHelper {
                 do {
                     int deckId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                     String deckName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    int sessionNumber = cursor.getInt(cursor.getColumnIndexOrThrow("session_number"));
 
-                    Deck deck = new Deck(deckId, deckName);
+                    Deck deck = new Deck(deckId, deckName, sessionNumber);
 
                     decks.add(deck);
                 } while (cursor.moveToNext());

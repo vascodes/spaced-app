@@ -5,17 +5,17 @@ import androidx.annotation.NonNull;
 public class Deck {
     private int id;
     private String name;
-
     private int sessionNumber;
-    private String sessionEndDate;
 
-    public Deck(int id, String name) {
+    public Deck(int id, String name, int sessionNumber) {
         this.id = id;
         this.name = name;
+        this.sessionNumber = sessionNumber;
     }
 
-    public Deck(String name) {
+    public Deck(String name, int sessionNumber) {
         this.name = name;
+        this.sessionNumber = sessionNumber;
     }
 
     public int getId() {
@@ -42,13 +42,6 @@ public class Deck {
         this.sessionNumber = sessionNumber;
     }
 
-    public String getSessionEndDate() {
-        return sessionEndDate;
-    }
-
-    public void setSessionEndDate(String sessionEndDate) {
-        this.sessionEndDate = sessionEndDate;
-    }
 
     @NonNull
     @Override

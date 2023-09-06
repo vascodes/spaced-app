@@ -9,7 +9,7 @@ public class Flashcard {
     private String answer;
     private int boxNumber;
 
-    Flashcard(int id, int deckId, String question, String answer, int boxNumber) {
+    public Flashcard(int id, int deckId, String question, String answer, int boxNumber) {
         this.id = id;
         this.setDeckId(deckId);
         this.setQuestion(question);
@@ -17,7 +17,7 @@ public class Flashcard {
         this.boxNumber = boxNumber;
     }
 
-    Flashcard(int deckId, String question, String answer, int boxNumber) {
+    public Flashcard(int deckId, String question, String answer, int boxNumber) {
         this.setDeckId(deckId);
         this.setQuestion(question);
         this.setAnswer(answer);

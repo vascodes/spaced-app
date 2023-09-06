@@ -11,26 +11,6 @@ import com.vascodes.spaced.View.QuizView;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-/**
- * TODO: Add session_count, session_date columns to deck table. By default, the session_count starts at 0.
- * TODO: Add box_number to flashcard table. By default, the box_number starts at 1.
- * <p>
- * Handling Session:
- * Pass the deck / flashcards to QuizPresenter
- * On start:
- * get the session_count of selected deck from DB.
- * use the session_count in QuizManager.start().
- * if session_count is 0
- * create 3 boxes, init box1 with all cards of deck.
- * else
- * add flashcards to boxes based on the box_number of flashcard.
- * review the boxes as required for each session.
- * <p>
- * When a deck is selected and then completed (answered all flashcards):
- * increment the session_count of that deck by 1
- * set the session_date as current date (day).
- */
-
 class Box {
     int number;
     ArrayList<Flashcard> flashcards;
@@ -88,11 +68,12 @@ class Box {
 }
 
 public class QuizPresenter {
+    private final HashSet<Flashcard> reviewedCards = new HashSet<>();
     QuizView view;
     DeckPresenter deckPresenter;
     FlashcardPresenter flashcardPresenter;
-
     private ArrayList<Box> boxes;
+    private Deck currentDeck;
     private int currentSessionNumber;
     private Flashcard currentFlashcard;
     private Box currentBox;
@@ -112,7 +93,11 @@ public class QuizPresenter {
         this.view = view;
     }
 
-    public void placeFlashcardsInBoxes(Deck deck) {
+    /**
+     * @param deck Object of Deck model.
+     * @return number of flashcards placed in boxes.
+     */
+    public int placeFlashcardsInBoxes(Deck deck) {
         // Create boxes.
         if (boxes == null) {
             boxes = new ArrayList<>(Constants.LEITNER_BOXES_COUNT);
@@ -122,7 +107,11 @@ public class QuizPresenter {
         }
 
         // TODO: Verify whether deck contains flashcards. Otherwise, switch to add flashcard activity.
-        ArrayList<Flashcard> flashcards = flashcardPresenter.getAllFlashCards(deck.getId());
+        ArrayList<Flashcard> flashcards = flashcardPresenter.getAllFlashCards(deck);
+        if (flashcards.isEmpty()) {
+            view.onDeckEmpty();
+            return 0;
+        }
 
         // First session.
         if (currentSessionNumber == 1) {
@@ -136,11 +125,25 @@ public class QuizPresenter {
                 boxes.get(boxIndex).addFlashcard(f);
             }
         }
+
+        return flashcards.size();
     }
 
     void stopSession() {
         System.out.println("Session Complete");
-        // TODO: Update box_numbers of flashcards, last_session_number of deck in DB.
+
+        int nextSessionNumber = (currentSessionNumber != 5) ? (currentSessionNumber + 1) : 1;
+        currentDeck.setSessionNumber(nextSessionNumber);
+
+        // TODO: Instead of using reviewedCards, try updating the flashcards using shared model / interface communication.
+        System.out.println("Updating reviewed cards in db.");
+        for (Flashcard f : reviewedCards) {
+            System.out.println(f.getQuestion() + " box: " + f.getBoxNumber());
+            flashcardPresenter.updateFlashcard(f);
+        }
+        deckPresenter.updateDeck(currentDeck);
+
+        reviewedCards.clear();
         view.onSessionComplete();
     }
 
@@ -176,12 +179,11 @@ public class QuizPresenter {
                 break;
             }
             case 5: {
-                Box nextBox = boxes.get(boxIndex + 1);
-
-                if (nextBox.number > boxes.size()) {
+                if (boxIndex + 1 >= boxes.size()) {
                     stopSession();
                 } else {
                     // Review all cards in Second or Third box.
+                    Box nextBox = boxes.get(boxIndex + 1);
                     this.currentBox = nextBox;
                     pickFlashcard(nextBox);
                 }
@@ -193,12 +195,15 @@ public class QuizPresenter {
     }
 
     public void startQuiz(Deck deck) {
+        currentDeck = deck;
         currentSessionNumber = deck.getSessionNumber();
-        System.out.println("Session Number at start: " + currentSessionNumber);
+        System.out.println("Session number: " + currentSessionNumber);
 
-        placeFlashcardsInBoxes(deck);
+        int numFlashcardsPlaced = placeFlashcardsInBoxes(deck);
+
+        if (numFlashcardsPlaced == 0) return;
+
         currentBox = boxes.get(0); // First box.
-
         pickFlashcard(currentBox);
     }
 
@@ -220,7 +225,6 @@ public class QuizPresenter {
             if (currentBox.number + 1 <= boxes.size()) {
                 // Mark card to place it in the next box.
                 currentFlashcard.setBoxNumber(currentBox.number + 1);
-                System.out.println("Card placed in box " + (currentBox.number + 1));
             }
         } else {
             // Incorrect answer.
@@ -230,6 +234,7 @@ public class QuizPresenter {
             currentFlashcard.setBoxNumber(1);
         }
 
+        reviewedCards.add(currentFlashcard);
         pickFlashcard(currentBox);
     }
 }
