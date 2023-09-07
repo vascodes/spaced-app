@@ -112,11 +112,14 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
 
         try {
             ContentValues values = new ContentValues();
+            values.put("deck_id", flashcard.getDeckId());
+            values.put("question", flashcard.getQuestion());
+            values.put("answer", flashcard.getAnswer());
             values.put("box_number", flashcard.getBoxNumber());
 
             int numUpdatedRows = db.update(Constants.FLASHCARD_TABLE, values, "id = ?", new String[]{String.valueOf(flashcard.getId())});
             if (numUpdatedRows == 0)
-                throw new SQLiteException("Could not update box number of flashcard.");
+                throw new SQLiteException("Could not update flashcard.");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
