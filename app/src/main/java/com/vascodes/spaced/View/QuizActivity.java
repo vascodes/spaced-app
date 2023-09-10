@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.vascodes.spaced.Common.Utils;
 import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Model.DeckDbHelper;
 import com.vascodes.spaced.Presenter.QuizPresenter;
@@ -72,12 +73,6 @@ public class QuizActivity extends AppCompatActivity implements QuizView, View.On
         }
     }
 
-    public void clearEditTexts(EditText... editTexts){
-        for (EditText et : editTexts){
-            et.setText("");
-        }
-    }
-
     @Override
     public void showQuestion(String question) {
         editTextQuestion.setText(question);
@@ -86,18 +81,18 @@ public class QuizActivity extends AppCompatActivity implements QuizView, View.On
     @Override
     public void onAnswerCorrect() {
         Toast.makeText(this, "Correct Answer!", Toast.LENGTH_SHORT).show();
-        clearEditTexts(editTextQuestion, editTextAnswer);
+        Utils.clearEditTexts(editTextQuestion, editTextAnswer);
     }
 
     @Override
     public void onAnswerIncorrect() {
         Toast.makeText(this, "Wrong Answer. Card placed in first box!", Toast.LENGTH_SHORT).show();
-        clearEditTexts(editTextQuestion, editTextAnswer);
+        Utils.clearEditTexts(editTextQuestion, editTextAnswer);
     }
 
     @Override
     public void onAnswerEmpty() {
-        Toast.makeText(this, "Please enter an answer.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Please provide an answer.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -106,6 +101,7 @@ public class QuizActivity extends AppCompatActivity implements QuizView, View.On
         finish();
     }
 
+    // Switch to add flashcard activity if deck does not contain any flashcard.
     @Override
     public void onDeckEmpty() {
         Toast.makeText(this, "Please add flashcards to this deck.", Toast.LENGTH_SHORT).show();

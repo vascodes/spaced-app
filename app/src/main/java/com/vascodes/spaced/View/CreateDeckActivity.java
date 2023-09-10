@@ -8,12 +8,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.vascodes.spaced.Common.Utils;
 import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Presenter.DeckPresenter;
 import com.vascodes.spaced.R;
 
-public class CreateDeckActivity extends AppCompatActivity implements DeckView {
-    private DeckPresenter presenter;
+public class CreateDeckActivity extends AppCompatActivity implements DeckView, View.OnClickListener {
+    private DeckPresenter deckPresenter;
 
     private EditText editTextDeckName;
     private Button buttonCreateDeck;
@@ -24,25 +25,27 @@ public class CreateDeckActivity extends AppCompatActivity implements DeckView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_deck);
 
-        presenter = new DeckPresenter(this, this);
+        deckPresenter = new DeckPresenter(this, this);
         editTextDeckName = findViewById(R.id.editTextDeckName);
         buttonCreateDeck = findViewById(R.id.buttonCreateDeck);
         buttonBack = findViewById(R.id.buttonBack);
 
-        buttonCreateDeck.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String deckName = editTextDeckName.getText().toString();
-                presenter.addDeck(new Deck(deckName, 1));
-            }
-        });
+        buttonCreateDeck.setOnClickListener(this);
+        buttonBack.setOnClickListener(this);
+    }
 
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.buttonCreateDeck:
+                String deckName = editTextDeckName.getText().toString();
+                deckPresenter.addDeck(new Deck(deckName, 1));
+                Utils.clearEditTexts(editTextDeckName);
+                break;
+            case R.id.buttonBack:
                 finish();
-            }
-        });
+                break;
+        }
     }
 
     @Override

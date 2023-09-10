@@ -76,6 +76,7 @@ public class AddFlashcardActivity extends AppCompatActivity implements Flashcard
                 String question = editTextQuestion.getText().toString();
                 String answer = editTextAnswer.getText().toString();
                 flashcardPresenter.addFlashcard(deckId, question, answer);
+                Utils.clearEditTexts(editTextQuestion, editTextAnswer);
                 break;
 
             case R.id.buttonBack:

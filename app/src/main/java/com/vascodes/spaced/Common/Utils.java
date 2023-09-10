@@ -2,6 +2,7 @@ package com.vascodes.spaced.Common;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.vascodes.spaced.Model.Deck;
@@ -20,5 +21,11 @@ public class Utils {
         spinner.setAdapter(arrayAdapter);
 
         return spinner;
+    }
+
+    public static void clearEditTexts(EditText... editTexts){
+        for (EditText et : editTexts){
+            et.setText("");
+        }
     }
 }

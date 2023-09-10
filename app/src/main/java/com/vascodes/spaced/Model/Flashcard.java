@@ -2,6 +2,8 @@ package com.vascodes.spaced.Model;
 
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 public class Flashcard {
     private int id;
     private int deckId;
@@ -62,5 +64,18 @@ public class Flashcard {
 
     public void setBoxNumber(int boxNumber) {
         this.boxNumber = boxNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Flashcard flashcard = (Flashcard) o;
+        return getId() == flashcard.getId() && getDeckId() == flashcard.getDeckId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getDeckId());
     }
 }

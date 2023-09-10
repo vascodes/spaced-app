@@ -46,15 +46,20 @@ public class FlashcardPresenter {
         } catch (SQLiteException e) {
             System.out.println(e.getMessage());
             view.onFlashcardAddedFailed();
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
-    // TODO: Create a shared DeckFlashcard model OR use interface communication approach for interactions between deck and flashcard models.
     public ArrayList<Flashcard> getAllFlashCards(Deck deck){
-        return flashcardDbHelper.getAllFlashcardsOfADeck(deck.getId());
+        return flashcardDbHelper.getAllFlashcardsOfDeck(deck.getId());
     }
 
     public void updateFlashcard(Flashcard flashcard){
-        flashcardDbHelper.updateFlashcard(flashcard);
+        try {
+            flashcardDbHelper.updateFlashcard(flashcard);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

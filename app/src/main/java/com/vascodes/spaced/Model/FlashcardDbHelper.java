@@ -76,7 +76,7 @@ public class FlashcardDbHelper extends SQLiteOpenHelper {
         return flashcard;
     }
 
-    public ArrayList<Flashcard> getAllFlashcardsOfADeck(int deckId) {
+    public ArrayList<Flashcard> getAllFlashcardsOfDeck(int deckId) {
         ArrayList<Flashcard> flashcards = new ArrayList<>();
         Cursor cursor = null;
         db = this.getReadableDatabase();
