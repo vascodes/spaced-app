@@ -6,7 +6,7 @@ Spaced is a learning app that uses the Leitner System for spaced repetition.
 
 In this system, flashcards are sorted into groups (boxes) according to how well the learner knows each one in Leitner's learning box. The learners try to recall the solution written on a flashcard. If they succeed, they send the card to the next box. If they fail, they send it back to the first box. Each succeeding box has a longer period before the learner is required to revisit the cards. 
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Leitner_system_alternative.svg/1920px-Leitner_system_alternative.svg.png)
+![](./docs/Leitner_System.png)
 
 #### This application uses the following 3 boxes:
 1. Box 1: Flashcards in this box are reviewed everyday.
