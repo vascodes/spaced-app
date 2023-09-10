@@ -7,28 +7,25 @@ import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Model.Flashcard;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Quiz {
-    private HashSet<Flashcard> reviewedCards = new HashSet<>();
+    private final HashSet<Flashcard> reviewedCards = new HashSet<>();
     private ArrayList<Box> boxes;
-    private Deck currentDeck;
-    private int currentSessionNumber;
+    private final Deck currentDeck;
     private Flashcard currentFlashcard;
     private Box currentBox;
     private boolean isSessionComplete = false;
 
-    Quiz (Deck deck, ArrayList<Flashcard> flashcards) throws Exception {
-        if (flashcards.get(0).getDeckId() != deck.getId()){
+    Quiz(Deck deck, ArrayList<Flashcard> flashcards) throws Exception {
+        if (flashcards.get(0).getDeckId() != deck.getId()) {
             // TODO: Create custom exception for Deck mismatch.
             throw new Exception("Flashcards are not part of this deck.");
         }
 
         reviewedCards.clear();
         currentDeck = deck;
-        currentSessionNumber = deck.getSessionNumber();
-        System.out.println("Session number: " + currentSessionNumber);
+        System.out.println("Session number: " + currentDeck.getSessionNumber());
 
         placeFlashcardsInBoxes(flashcards);
 
@@ -62,7 +59,7 @@ public class Quiz {
         }
 
         // First session.
-        if (currentSessionNumber == 1) {
+        if (currentDeck.getSessionNumber() == 1) {
             // Place all flashcards in first box.
             boxes.get(0).addFlashcards(flashcards);
         } else {
@@ -84,40 +81,44 @@ public class Quiz {
         }
 
         // When all flashcards of a box are reviewed.
-        switch (currentSessionNumber) {
-            case 1:
-            case 3: {
-                // Stop session after reviewing all cards in First Box.
-                stop();
-                break;
-            }
-            case 2:
-            case 4: {
-                // Review all cards in Second box.
-                Box nextBox = boxes.get(boxIndex + 1);
-
-                if (nextBox.getNumber() != 2) {
+        try {
+            switch (currentDeck.getSessionNumber()) {
+                case 1:
+                case 3: {
+                    // Stop session after reviewing all cards in First Box.
                     stop();
-                } else {
-                    // Start reviewing cards in second box.
-                    this.currentBox = nextBox;
-                    pickFlashcard(nextBox);
+                    break;
                 }
-                break;
-            }
-            case 5: {
-                if (boxIndex + 1 >= boxes.size()) {
-                    stop();
-                } else {
-                    // Review all cards in Second or Third box.
+                case 2:
+                case 4: {
+                    // Review all cards in Second box.
                     Box nextBox = boxes.get(boxIndex + 1);
-                    this.currentBox = nextBox;
-                    pickFlashcard(nextBox);
+
+                    if (nextBox.getNumber() != 2) {
+                        stop();
+                    } else {
+                        // Start reviewing cards in second box.
+                        this.currentBox = nextBox;
+                        pickFlashcard(nextBox);
+                    }
+                    break;
                 }
-                break;
+                case 5: {
+                    if (boxIndex + 1 >= boxes.size()) {
+                        stop();
+                    } else {
+                        // Review all cards in Second or Third box.
+                        Box nextBox = boxes.get(boxIndex + 1);
+                        this.currentBox = nextBox;
+                        pickFlashcard(nextBox);
+                    }
+                    break;
+                }
+                default:
+                    throw new Exception("Session number must be between 1 to 5");
             }
-            default:
-                System.out.println("Pick flashcard switch default. sessionNumber = " + currentSessionNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -160,7 +161,7 @@ public class Quiz {
         System.out.println("Session Complete");
         isSessionComplete = true;
 
-        int nextSessionNumber = (currentSessionNumber != 5) ? (currentSessionNumber + 1) : 1;
+        int nextSessionNumber = (currentDeck.getSessionNumber() != 5) ? (currentDeck.getSessionNumber() + 1) : 1;
         currentDeck.setSessionNumber(nextSessionNumber);
     }
 }

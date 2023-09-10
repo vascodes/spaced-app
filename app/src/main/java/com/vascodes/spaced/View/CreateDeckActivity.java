@@ -36,7 +36,7 @@ public class CreateDeckActivity extends AppCompatActivity implements DeckView, V
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.buttonCreateDeck:
                 String deckName = editTextDeckName.getText().toString();
                 deckPresenter.addDeck(new Deck(deckName, 1));

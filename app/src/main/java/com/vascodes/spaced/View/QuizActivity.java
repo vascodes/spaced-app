@@ -2,6 +2,8 @@ package com.vascodes.spaced.View;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,8 +17,6 @@ import com.vascodes.spaced.Model.Deck;
 import com.vascodes.spaced.Model.DeckDbHelper;
 import com.vascodes.spaced.Presenter.QuizPresenter;
 import com.vascodes.spaced.R;
-
-import org.w3c.dom.Text;
 
 public class QuizActivity extends AppCompatActivity implements QuizView, View.OnClickListener {
     private QuizPresenter quizPresenter;
@@ -50,13 +50,32 @@ public class QuizActivity extends AppCompatActivity implements QuizView, View.On
         textViewTitle = findViewById(R.id.textViewTitle);
         editTextQuestion = findViewById(R.id.editTextQuestion);
         editTextAnswer = findViewById(R.id.editTextAnswer);
-        buttonCheckAnswer = findViewById(R.id.buttonCheckAnswer); // TODO: Disable buttonCheckAnswer if answer is editTextAnswer is empty.
+        buttonCheckAnswer = findViewById(R.id.buttonCheckAnswer);
         buttonBack = findViewById(R.id.buttonBack);
 
         buttonCheckAnswer.setOnClickListener(this);
+        buttonCheckAnswer.setEnabled(false);
         buttonBack.setOnClickListener(this);
 
-        quizPresenter.startQuiz(deck);
+        // Enable button to check answer only when an answer is provided.
+        editTextAnswer.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                buttonCheckAnswer.setEnabled(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                buttonCheckAnswer.setEnabled(true);
+            }
+        });
+
+        quizPresenter.start(deck);
     }
 
     @Override
@@ -82,12 +101,14 @@ public class QuizActivity extends AppCompatActivity implements QuizView, View.On
     public void onAnswerCorrect() {
         Toast.makeText(this, "Correct Answer!", Toast.LENGTH_SHORT).show();
         Utils.clearEditTexts(editTextQuestion, editTextAnswer);
+        quizPresenter.update();
     }
 
     @Override
     public void onAnswerIncorrect() {
         Toast.makeText(this, "Wrong Answer. Card placed in first box!", Toast.LENGTH_SHORT).show();
         Utils.clearEditTexts(editTextQuestion, editTextAnswer);
+        quizPresenter.update();
     }
 
     @Override
@@ -101,9 +122,9 @@ public class QuizActivity extends AppCompatActivity implements QuizView, View.On
         finish();
     }
 
-    // Switch to add flashcard activity if deck does not contain any flashcard.
     @Override
     public void onDeckEmpty() {
+        // Switch to add flashcard activity if deck does not contain any flashcard.
         Toast.makeText(this, "Please add flashcards to this deck.", Toast.LENGTH_SHORT).show();
         Intent addFlashcardIntent = new Intent("activity.AddFlashcard");
         startActivity(addFlashcardIntent);

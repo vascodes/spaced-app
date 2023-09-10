@@ -24,7 +24,7 @@ public class QuizPresenter {
         this.view = view;
     }
 
-    public void startQuiz(Deck deck){
+    public void start(Deck deck) {
         // Check if deck contains flashcards.
         ArrayList<Flashcard> flashcards = flashcardPresenter.getAllFlashCards(deck);
         if (flashcards.isEmpty()) {
@@ -34,21 +34,21 @@ public class QuizPresenter {
 
         try {
             quiz = new Quiz(deck, flashcards);
-            updateQuiz();
+            update();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void updateQuiz(){
-        if (quiz.isSessionComplete()){
-            stopQuiz();
+    public void update() {
+        if (quiz.isSessionComplete()) {
+            stop();
         } else {
             view.showQuestion(quiz.getCurrentFlashcard().getQuestion());
         }
     }
 
-    public void checkAnswer(String answer){
+    public void checkAnswer(String answer) {
         try {
             if (quiz.checkAnswer(answer)) {
                 view.onAnswerCorrect();
@@ -58,11 +58,9 @@ public class QuizPresenter {
         } catch (IllegalArgumentException iae) {
             view.onAnswerEmpty();
         }
-
-        updateQuiz();
     }
 
-    public void stopQuiz(){
+    public void stop() {
         System.out.println("Quiz stopped. Updating data.");
 
         for (Flashcard f : quiz.getReviewedCards()) {

@@ -35,7 +35,7 @@ public class DbManager extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         deckDbHelper.onUpgrade(sqLiteDatabase, i, i1);
-        flashcardDbHelper.onUpgrade(sqLiteDatabase,i, i1);
+        flashcardDbHelper.onUpgrade(sqLiteDatabase, i, i1);
         System.out.println("Updated all tables.");
     }
 }

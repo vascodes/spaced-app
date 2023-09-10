@@ -11,18 +11,18 @@ import java.util.ArrayList;
 
 public class DeckPresenter {
     private DeckView view;
-    private DeckDbHelper dbHelper;
+    private final DeckDbHelper dbHelper;
 
     public DeckPresenter(DeckView view, Context context) {
         this.view = view;
         dbHelper = new DeckDbHelper(context);
     }
 
-    public DeckPresenter(Context context){
+    public DeckPresenter(Context context) {
         dbHelper = new DeckDbHelper(context);
     }
 
-    public void setView(DeckView view){
+    public void setView(DeckView view) {
         this.view = view;
     }
 
@@ -43,7 +43,7 @@ public class DeckPresenter {
         }
     }
 
-    public void updateDeck(Deck deck){
+    public void updateDeck(Deck deck) {
         dbHelper.updateDeck(deck);
     }
 
@@ -51,7 +51,7 @@ public class DeckPresenter {
         return dbHelper.getDeck(deckName);
     }
 
-    public ArrayList<Deck> getAllDecks(){
+    public ArrayList<Deck> getAllDecks() {
         ArrayList<Deck> decks = dbHelper.getAllDecks();
         return decks;
     }
